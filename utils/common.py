@@ -172,12 +172,12 @@ def show_images(image_orginal, fid_original, pid_original,
     plt.imshow(image, cmap=plt.cm.binary)
 
     # Dibujamos un resumen de la respuesta
-    if ap !=0 :
-        title = "Resumen ap: {:.2f}".format(ap)
-        plt.subplot(rows, columns, 2, title=title)
-        x = np.arange(aps.shape[0])+1
-        plt.plot(x, aps,  'o-')
-        plt.show()
+    
+    title = "Resumen ap: {:.2f}".format(ap)
+    plt.subplot(rows, columns, 2, title=title)
+    x = np.arange(aps.shape[0])+1
+    plt.plot(x, aps,  'o-')
+    plt.show()
 
     for i in range(n_retrievals):
         # Start next subplot.

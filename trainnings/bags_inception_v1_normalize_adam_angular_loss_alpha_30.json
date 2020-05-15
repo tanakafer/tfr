@@ -3,7 +3,7 @@
   "loading_threads": 8,
   "checkpoint_frequency": 100,
   "model": {
-    "name": "vgg16",
+    "name": "inception_v1",
     "head": "direct_normalize",
     "embedding_dim": 128,
     "input": {
@@ -19,13 +19,13 @@
       "K": 2
     },
     "fit": {
-      "loss": "semi_hard_triplet",
+      "loss": "angular_loss",
       "metric": "euclidean",
-      "margin": 0.2,
+      "alpha": 30,
       "optimizer": "adam",
       "epochs": 25000,
       "lr": 0.0003,
-      "decay_start_iteration": 1500
+      "decay_start_iteration": -1
     }
   }
 }

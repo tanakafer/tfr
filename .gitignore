@@ -136,3 +136,13 @@ dmypy.json
 
 # Cython debug symbols
 cython_debug/
+
+
+# Ficheros de prueba
+
+
+kk*.py
+
+# No replicamos el fichero de configuración
+
+configuration.py

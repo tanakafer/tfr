@@ -205,7 +205,7 @@ def main(cfg):
     map = np.average(np.array(maps))
     print('MAP: {:.2f}%'.format(map*100))
     with eval_summary_writer.as_default():
-        tf.summary.scalar('Tiempo Total de recuperación', total_t1-total_t0, step=1)
+        tf.summary.scalar('Tiempo Total', total_t1-total_t0, step=1)
         tf.summary.scalar('Score mAP', map, step=1)
 
 

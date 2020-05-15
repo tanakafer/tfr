@@ -12,8 +12,8 @@ def angular_loss(input_labels, anchor_features, pos_features, degree=45, batch_s
     else:
         l2loss = 0.0
 
-    alpha = tf.Variable(np.deg2rad(degree))
-    sq_tan_alpha = tf.Variable(np.tan(alpha) ** 2)
+    alpha = np.deg2rad(degree)
+    sq_tan_alpha = np.tan(alpha) ** 2
 
     # anchor_features = tf.nn.l2_normalize(anchor_features)
     # pos_features = tf.nn.l2_normalize(pos_features)

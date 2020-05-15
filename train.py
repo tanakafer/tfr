@@ -187,8 +187,7 @@ def main(cfg):
         with tf.GradientTape() as tape:
             # Obtenemos de cada batch los correspondientes vectores
             # de característias
-            batch_embedding = emb_model(images )
-
+            batch_embedding = emb_model(images)
             # Realizamos la norma de orden 2 si procede
             if emb_model.l2_embedding:
                 batch_embedding = tf.nn.l2_normalize(batch_embedding, -1)
@@ -232,7 +231,10 @@ def main(cfg):
                 # pids = tf.Print(pids, [pids], 'pids:: ', summarize=100)
                 pids, _ = tf.unstack(tf.reshape(pids, [-1, 2, 1]), 2, 1)
                 # pids = tf.Print(pids,[pids],'pids:: ',summarize=100)
+                # Añadimos el parámetro del ángulo máximo que puede
+                # forma epn y ean
                 embedding_loss = angular_loss(pids, embeddings_anchor, embeddings_positive,
+                                            degree= cfg.model.fit.alpha,
                                             batch_size=cfg.model.batch.P, with_l2reg=True)
 
             elif cfg.model.fit.loss == 'npairs_loss':
@@ -296,8 +298,6 @@ if __name__ == '__main__':
 
     with open(config_file) as f:
         config = json.load(f, object_hook=lambda d: Namespace(**d))
-
-
 
     config = directories(config)
 

@@ -23,7 +23,10 @@ def directories(cfg, state='train'):
     cfg.dirs.trained_models = const.trained_models_dir
 
     # Creamos el nombre para la almacenar la información del emb_modelo
-    exp_name = [cfg.dataset, cfg.model.name, cfg.model.head,cfg.model.fit.optimizer,cfg.model.fit.loss, 'm_{}'.format(cfg.model.fit.margin)]
+    if cfg.model.fit.loss == "angular_loss":
+        exp_name = [cfg.dataset, cfg.model.name, cfg.model.head,cfg.model.fit.optimizer,cfg.model.fit.loss, 'alpha_{}'.format(cfg.model.fit.alpha)]
+    else:
+        exp_name = [cfg.dataset, cfg.model.name, cfg.model.head,cfg.model.fit.optimizer,cfg.model.fit.loss, 'm_{}'.format(cfg.model.fit.margin)]
     cfg.model_name = '_'.join(exp_name)
 
     # El directorio de los checkpoint
