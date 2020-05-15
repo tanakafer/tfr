@@ -57,6 +57,17 @@ def directories(cfg, state='train'):
         cfg.dirs.test_file= os.path.join(const.dataset_dir, dataset_dir, test_file + '.csv')
         #Creamos el directorios
         os_utils.touch_dir(cfg.dirs.embeddings)
+    elif state =='production':
+        if cfg.dataset == 'cub':
+            labels_file = 'classes.txt'
+        elif cfg.dataset == 'bags':
+            labels_file = 'bags_labels.csv'
+        # Directorio para recuperar los nombres de las etiquetas de las imágenes
+        cfg.dirs.labels_file= os.path.join(const.dataset_dir, dataset_dir, labels_file)
+        cfg.dirs.embeddings= const.embeddings_dir
+        cfg.dirs.embeddings_file = os.path.join(cfg.dirs.embeddings, cfg.model_name +".h5")
+        cfg.dirs.cbir_log = os.path.join(const.tensorboard_dir, cfg.model_name,'cbir', current_time)
+        os_utils.touch_dir(cfg.dirs.cbir_log)
 
 
 

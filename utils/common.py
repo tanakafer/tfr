@@ -53,6 +53,28 @@ def load_dataset(csv_file, image_root, fail_on_missing=True):
 
     return pids, fids
 
+
+def load_labels(csv_file):
+    """ Cargamos los nombres de las etiquetas y devolvemos PIDs y los NPIDs
+    NPIDS: nombres de las etiquetas
+    Args:
+        csv_file (string): El fichero csv donde encontramos los nombres delos PIDS
+
+    Returns:
+        (pids, npids) una tupla de numpy string arrasy correspondiente a los PIDS y NPIDS.
+
+    """
+    dataset = np.genfromtxt(csv_file, delimiter=',',dtype='|U')
+    #dataset = np.genfromtxt(csv_file, delimiter=',', dtype='|U')
+    pids, nipds = dataset.T
+
+    return pids, nipds
+
+def get_label_name(pid, pids, npids):
+    pids=pids.tolist()
+    idx = pids.index(str(int(pid)))
+    return npids[idx]
+
 # Basado en el proyecto  https://github.com/ahmdtaha/tf_retrieval_baseline.git
 
 def sample_k_fids_for_pid(pid, all_fids, all_pids, batch_k):
@@ -90,6 +112,23 @@ def fid_to_image(fid, pid, image_root, image_size):
     image_resized = tf.image.resize(image_decoded, image_size)
 
     return image_resized, fid, pid
+
+def load_image(path, image_size):
+    # fid = tf.Print(fid,[fid, pid],'fid ::')
+    """ Loads and resizes an image given by FID. Pass-through the PID. """
+    # Since there is no symbolic path.join, we just add a '/' to be sure.
+    image_encoded = tf.io.read_file(path)
+
+    # tf.image.decode_image doesn't set the shape, not even the dimensionality,
+    # because it potentially loads animated .gif files. Instead, we use either
+    # decode_jpeg or decode_png, each of which can decode both.
+    # Sounds ridiculous, but is true:
+    # https://github.com/tensorflow/tensorflow/issues/9356#issuecomment-309144064
+    image_decoded = tf.io.decode_jpeg(image_encoded, channels=3)
+    image_resized = tf.image.resize(image_decoded, image_size)
+
+    return image_resized
+
 
 # Buscamos el pid de un fid
 
@@ -142,6 +181,7 @@ def plot_to_image(figure):
   return image
 
 
+
  # Representamos las imágen origianl
  # enfretada a las imágenes Recuperadas
 
@@ -164,7 +204,10 @@ def show_images(image_orginal, fid_original, pid_original,
     image = image_orginal.numpy().astype('float32')[0] /255
 
     figure = plt.figure(figsize=(10,10))
-    title = "Original Label: {} ".format(pid)
+    if pid == -1:
+        title = "Original Label"
+    else:
+        title = "Original Label: {} ".format(pid)
     plt.subplot(rows, columns, 1, title=title)
     plt.xticks([])
     plt.yticks([])
@@ -172,12 +215,12 @@ def show_images(image_orginal, fid_original, pid_original,
     plt.imshow(image, cmap=plt.cm.binary)
 
     # Dibujamos un resumen de la respuesta
-    
-    title = "Resumen ap: {:.2f}".format(ap)
-    plt.subplot(rows, columns, 2, title=title)
-    x = np.arange(aps.shape[0])+1
-    plt.plot(x, aps,  'o-')
-    plt.show()
+    if pid != -1:
+        title = "Resumen ap: {:.2f}".format(ap)
+        plt.subplot(rows, columns, 2, title=title)
+        x = np.arange(aps.shape[0])+1
+        plt.plot(x, aps,  'o-')
+        plt.show()
 
     for i in range(n_retrievals):
         # Start next subplot.
