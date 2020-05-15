@@ -266,9 +266,11 @@ def main(cfg):
                 # for batch_idx, batch in enumerate():
                 start_time = time.time()
                 images, fids, pids = next(dataset_iter)
-                strategy = tf.distribute.MirroredStrategy()
-                with strategy.scope():
-                    batch_loss = train_step(images, pids, i)
+                # strategy = tf.distribute.MirroredStrategy()
+                # strategy = tf.distribute.OneDeviceStrategy(device="/gpu:0")
+                # with strategy.scope():
+                # TODO: Leer el documento https://www.tensorflow.org/guide/distributed_training#using_tfdistributestrategy_with_custom_training_loops
+                batch_loss = train_step(images, pids, i)
                 elapsed_time = time.time() - start_time
                 seconds_todo = (cfg.model.fit.epochs - i) * elapsed_time
                 print('iter:{:6d}, loss min|avg|max: {:.3f}|{:.3f}|{:6.3f}, ETA: {} ({:.2f}s/it)'.format(
