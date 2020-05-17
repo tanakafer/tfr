@@ -43,6 +43,9 @@ class EmbeddingModel(tf.keras.Model):
         if cfg.model.name == 'inception_v1':
             self.base_model = tf.keras.applications.Xception(weights='imagenet', include_top=False)
             self.preprocess_input = tf.keras.applications.xception.preprocess_input
+        elif cfg.model.name == 'inception_v3':
+            self.base_model = tf.keras.applications.InceptionV3(weights='imagenet', include_top=False)
+            self.preprocess_input = tf.keras.applications.inception_v3.preprocess_input
         elif cfg.model.name == 'resnet_v1_50':
             self.base_model = tf.keras.applications.ResNet50(weights='imagenet', include_top=False)
             self.preprocess_input = tf.keras.applications.resnet.preprocess_input

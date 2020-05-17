@@ -19,5 +19,6 @@ Este código está basado en [ahmdtaha/tf_retrieval_baseline](https://github.com
 Hay tres ficheros a ejecutar.
 
 - train.py: Para realizar el entrenamiento
-- test.py: Para realizar una prueba. Coge una imágen aleatoria del conjuto de test del dataset y devuelvo las imágenes similares.
-- evaluation.py: Para realizar una evaluación del modelo de recuperación calculando la metrica mAP (Mean Average Precisión)
+- test.py: Para realizar una prueba. Coge una imagen aleatoria del conjunto de test del dataset y devuelve las imágenes similares.
+- cbir.py: Para realizar una prueba con cualquier desde un fichero y devuelve las imágenes similares.
+- evaluation.py: Para realizar una evaluación del modelo de recuperación calculando la métrica mAP (Mean Average Precision)

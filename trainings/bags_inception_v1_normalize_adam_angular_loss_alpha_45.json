@@ -23,7 +23,7 @@
       "metric": "euclidean",
       "alpha": 45,
       "optimizer": "adam",
-      "epochs": 25000,
+      "epochs": 2000,
       "lr": 0.0003,
       "decay_start_iteration": -1
     }

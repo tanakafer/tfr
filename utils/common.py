@@ -239,3 +239,28 @@ def show_images(image_orginal, fid_original, pid_original,
         plt.imshow(image, cmap=plt.cm.binary)
 
     return figure
+
+
+
+def create_sprite(data):
+    """
+    Tile images into sprite image.
+    Add any necessary padding
+    """
+
+    # For B&W or greyscale images
+    if len(data.shape) == 3:
+        data = np.tile(data[...,np.newaxis], (1,1,1,3))
+
+    n = int(np.ceil(np.sqrt(data.shape[0])))
+    padding = ((0, n ** 2 - data.shape[0]), (0, 0), (0, 0), (0, 0))
+    data = np.pad(data, padding, mode='constant',
+            constant_values=0)
+
+    # Tile images into sprite
+    data = data.reshape((n, n) + data.shape[1:]).transpose((0, 2, 1, 3, 4))
+    # print(data.shape) => (n, image_height, n, image_width, 3)
+
+    data = data.reshape((n * data.shape[1], n * data.shape[3]) + data.shape[4:])
+    # print(data.shape) => (n * image_height, n * image_width, 3)
+    return data

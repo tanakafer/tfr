@@ -8,16 +8,14 @@ from utils.dirs import directories
 from itertools import count
 import numpy as np
 import tensorflow as tf
-
+from tensorboard.plugins import projector
 
 from argparse import ArgumentParser, Namespace
 
 from utils import os_utils
-from utils.common import (load_dataset,
-                          fid_to_image,
-                          find_pid)
+from utils.common import *
 
-
+from PIL import Image
 from model.embedding_model import  EmbeddingModel
 
 parser = ArgumentParser(description='Crear la base de datos de vectores de características desde una red entrenada')
@@ -32,7 +30,14 @@ parser.add_argument(
 
 
 
+
+
+
 def main(cfg):
+
+
+
+
     if not os.path.exists(cfg.dirs.csv_file):
         raise  IOError(' No se encuentra el fichero del dataset: {}'.format(cfg.dirs.csv_file))
         return
@@ -73,7 +78,14 @@ def main(cfg):
 
     # Agrupamos el dataset en los batch_size
     # y preprocesamos la imagen para prepararlo para el emb_modelo
-    dataset = dataset.map(lambda im, fid, pid: (emb_model.preprocess_input(im), fid, pid))
+    # Añadimos los thumbnails
+    thumb_size=(28,28)
+    dataset = dataset.map( lambda im, fid, pid: (im, fid, pid,tf.image.resize(im, thumb_size)))
+
+    dataset = dataset.map(lambda im, fid, pid, thumb_size: (emb_model.preprocess_input(im), fid, pid, thumb_size))
+
+    # dataset = dataset.map( lambda im, fid, pid, thumb: (im, fid, pid,tf.image.convert_image_dtype(thumb, dtype=tf.uint8, saturate=False)))
+
     dataset = dataset.batch(cfg.batch_size)
     print ('Batch-size: {}'.format(cfg.batch_size))
 
@@ -120,6 +132,7 @@ def main(cfg):
         manager = tf.train.CheckpointManager(ckpt, cfg.dirs.checkpoint, max_to_keep=1)
         # Recuperamos el último checkpoint
         ckpt.restore(manager.latest_checkpoint)
+
         if manager.latest_checkpoint:
             print("Recuperado desde {}".format(manager.latest_checkpoint))
         else:
@@ -128,17 +141,18 @@ def main(cfg):
         # Inicializamos la base de datos con ceros
         emb_storage = np.zeros(
             ((len(fids) * len(modifiers)), cfg.model.embedding_dim), np.float32)
-
-
+        thumbnails = np.zeros(
+            ((len(fids) * len(modifiers)), thumb_size[0], thumb_size[1], 3), np.float32)
         # Recorremos todo el dataset para ir almacenando
-        # los vectores de característic
+        # los vectores de características
         dataset_iter = iter(dataset)
         for start_idx in count(step=cfg.batch_size):
             try:
-                images, _,_ = next(dataset_iter)
+                images, _,_, thumbs = next(dataset_iter)
                 emb = emb_model(images)
                 emb_storage[start_idx:start_idx + len(emb)] += emb
-                print('\rCreando vectores de característias {}-{}/{}'.format(
+                thumbnails[start_idx:start_idx + len(thumbs)] += thumbs
+                print('\rCreando vectores de características {}-{}/{}'.format(
                     start_idx, start_idx + len(emb), len(emb_storage)),
                     flush=True, end='')
             except StopIteration:
@@ -156,8 +170,43 @@ def main(cfg):
         fids_dataset = f_out.create_dataset('fids', data=fids)
         # Almacenamos el vector de características
         emb_dataset = f_out.create_dataset('emb', data=emb_storage)
+    f_out.close()
 
-        f_out.close()
+    sprite = create_sprite(thumbnails)
+
+
+
+    sprite =  Image.fromarray(np.uint8(sprite))
+    sprite_file =os.path.join(cfg.dirs.emb_log, "sprites.png")
+    sprite.save(sprite_file)
+    # Almacenamos el checkpoint para el projector
+
+
+
+    emb_storage = tf.Variable(emb_storage, name="embeddings")
+
+    ckpt_emb = tf.train.Checkpoint(embeddings=emb_storage)
+    ckpt_emb.save(os.path.join(cfg.dirs.emb_log, "embedding.ckpt"))
+    metadata = os.path.join(cfg.dirs.emb_log, 'metadata.tsv')
+    with open(metadata, 'w') as metadata_file:
+        for row in pids:
+            metadata_file.write('%d\n' % int(row))
+
+
+    # Generar una visualización del dataset
+    # Cogemos las imagenes del datas set.
+    config = projector.ProjectorConfig()
+    embedding = config.embeddings.add()
+    # The name of the tensor will be suffixed by `/.ATTRIBUTES/VARIABLE_VALUE`
+    embedding.tensor_name =  'embeddings/.ATTRIBUTES/VARIABLE_VALUE'
+    embedding.metadata_path = metadata
+    embedding.sprite.image_path = sprite_file
+    embedding.sprite.single_image_dim.extend(thumb_size)
+    # Definimos la ubicación donde se almacena los logs de Tensorboard
+    # emb_summary_writer = tf.summary.create_file_writer(cfg.dirs.emb_log)
+    projector.visualize_embeddings(cfg.dirs.emb_log, config)
+
+
 
 if __name__ == '__main__':
 
@@ -168,7 +217,7 @@ if __name__ == '__main__':
     with open(config_file) as f:
         config = json.load(f, object_hook=lambda d: Namespace(**d))
 
-    config = directories(config, state='test')
+    config = directories(config, state='emb')
     config.batch_size = batch_size
 
     print (config.batch_size)

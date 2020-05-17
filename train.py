@@ -301,6 +301,6 @@ if __name__ == '__main__':
     with open(config_file) as f:
         config = json.load(f, object_hook=lambda d: Namespace(**d))
 
-    config = directories(config)
+    config = directories(config, state="train")
 
     main(config)
