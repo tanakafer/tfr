@@ -1,9 +1,9 @@
 {
-  "dataset": "bags",
+  "dataset": "bags_40",
   "loading_threads": 8,
   "checkpoint_frequency": 100,
   "model": {
-    "name": "inception_v3",
+    "name": "inception_v1",
     "head": "direct_normalize",
     "embedding_dim": 128,
     "input": {

@@ -21,7 +21,7 @@
     "fit": {
       "loss": "semi_hard_triplet",
       "metric": "euclidean",
-      "margin": 0.2,
+      "margin": 0.5,
       "optimizer": "adam",
       "epochs": 2001,
       "lr": 0.0003,

@@ -1,5 +1,5 @@
 {
-  "dataset": "bags",
+  "dataset": "bags_40",
   "loading_threads": 8,
   "checkpoint_frequency": 100,
   "model": {

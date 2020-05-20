@@ -17,6 +17,13 @@ def directories(cfg, state='train'):
         dataset_dir = 'BAGS'
         dataset_file = 'bags_train'
         test_file ='bags_test'
+    elif cfg.dataset == 'bags_40':
+        dataset_dir = 'BAGS_40'
+        dataset_file = 'bags_train'
+        test_file ='bags_test'
+    else:
+        raise NotImplementedError('El dataset {} no existe'.format(cfg.dataset))
+
     cfg.dirs=Namespace()
     cfg.dirs.csv_file= os.path.join(const.dataset_dir, dataset_dir, dataset_file + '.csv')
     cfg.dirs.images= os.path.join(const.dataset_dir,dataset_dir, 'images')

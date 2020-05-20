@@ -1,5 +1,5 @@
 {
-  "dataset": "bags",
+  "dataset": "bags_40",
   "loading_threads": 8,
   "checkpoint_frequency": 100,
   "model": {
@@ -19,9 +19,9 @@
       "K": 2
     },
     "fit": {
-      "loss": "semi_hard_triplet",
+      "loss": "angular_loss",
       "metric": "euclidean",
-      "margin": 0.2,
+      "alpha": 45,
       "optimizer": "adam",
       "epochs": 2001,
       "lr": 0.0003,
