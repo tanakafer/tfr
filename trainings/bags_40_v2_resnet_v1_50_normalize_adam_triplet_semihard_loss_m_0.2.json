@@ -1,9 +1,9 @@
 {
-  "dataset": "bags_40",
+  "dataset": "bags_40_v2",
   "loading_threads": 8,
   "checkpoint_frequency": 100,
   "model": {
-    "name": "inception_v1",
+    "name": "resnet_v1_50",
     "head": "direct_normalize",
     "embedding_dim": 128,
     "input": {
@@ -19,9 +19,9 @@
       "K": 2
     },
     "fit": {
-      "loss": "angular_loss",
+      "loss": "semi_hard_triplet",
       "metric": "euclidean",
-      "alpha": 30,
+      "margin": 0.2,
       "optimizer": "adam",
       "epochs": 2000,
       "lr": 0.0003,

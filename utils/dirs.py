@@ -21,6 +21,10 @@ def directories(cfg, state='train'):
         dataset_dir = 'BAGS_40'
         dataset_file = 'bags_train'
         test_file ='bags_test'
+    elif cfg.dataset == 'bags_40_v2':
+        dataset_dir = 'BAGS_40_v2'
+        dataset_file = 'bags_train'
+        test_file ='bags_test'
     else:
         raise NotImplementedError('El dataset {} no existe'.format(cfg.dataset))
 
