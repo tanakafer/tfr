@@ -80,7 +80,12 @@ def directories(cfg, state='train'):
             labels_file = 'classes.txt'
         elif cfg.dataset == 'bags':
             labels_file = 'bags_labels.csv'
+        elif cfg.dataset == 'bags_40':
+            labels_file = 'bags_labels.csv'
+        elif cfg.dataset == 'bags_40_v2':
+            labels_file = 'bags_labels.csv'
         # Directorio para recuperar los nombres de las etiquetas de las imágenes
+
         cfg.dirs.labels_file= os.path.join(const.dataset_dir, dataset_dir, labels_file)
         cfg.dirs.embeddings= const.embeddings_dir
         cfg.dirs.embeddings_file = os.path.join(cfg.dirs.embeddings, cfg.model_name +".h5")
